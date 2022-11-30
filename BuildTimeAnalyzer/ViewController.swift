@@ -166,6 +166,7 @@ class ViewController: NSViewController {
         if let field = obj.object as? NSSearchField, field == searchField {
             dataSource.filter = searchField.stringValue
             tableView.reloadData()
+            displayFilteredTime()
         } else if let field = obj.object as? NSTextField, field == derivedDataTextField {
             buildManager.stopMonitoring()
             UserSettings.derivedDataLocation = field.stringValue
@@ -249,6 +250,14 @@ class ViewController: NSViewController {
     
     func updateTotalLabel(with buildTime: Int) {
         let text = "Build duration: " + (buildTime < 60 ? "\(buildTime)s" : "\(buildTime / 60)m \(buildTime % 60)s")
+        compileTimeTextField.stringValue = text
+    }
+
+    func displayFilteredTime() {
+        let buildTime = dataSource.processedData.reduce(into: 0.0) { partialResult, compileMeasure in
+            partialResult += compileMeasure.time
+        }
+        let text = "Total filtered time: \(Int(buildTime)) ms"
         compileTimeTextField.stringValue = text
     }
 }
